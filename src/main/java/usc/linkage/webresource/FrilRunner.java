@@ -90,7 +90,7 @@ private static final Logger logger = LoggerFactory.getLogger(FrilRunner.class);
 	}
 	
 	@GET
-	@Path("{fileName}")
+	@Path("data/{fileName}")
 	@Produces("text/plain")
 	public javax.ws.rs.core.Response getLinkageResult(@PathParam("fileName") String fileName) throws IOException{
 		String data = StandardCharsets.UTF_8.decode(ByteBuffer.wrap(Files.readAllBytes(Paths.get(fileName)))).toString();
