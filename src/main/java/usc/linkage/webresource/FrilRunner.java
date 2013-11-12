@@ -1,8 +1,6 @@
 package usc.linkage.webresource;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -18,26 +16,18 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
-
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import usc.linkage.configuration.ConfigBuilder;
 import usc.linkage.configuration.JSONParser;
-import usc.linkage.configuration.JoinSet;
 import usc.linkage.configuration.Linkage;
 
 import cdc.utils.RJException;
 
-import com.ning.http.client.AsyncHttpClient;
-import com.ning.http.client.Request;
-import com.ning.http.client.Response;
 
 @Path("/")
 public class FrilRunner {
-private static final Logger logger = LoggerFactory.getLogger(FrilRunner.class);
 	
 //"https://dl.dropboxusercontent.com/s/g4c31s8vpvthjm4/source2.csv?token_hash=AAEbXVY9_UUk14vpjBdf9jObZnT5Dm6Gtclkl3SlyhQLHA&amp;dl=1
 //https://dl.dropboxusercontent.com/s/t9b3nnlgftb9xo3/source1.csv?token_hash=AAFgnAO0pBYoUHP2icjVBm39fuxwKFn6_gvHdJAr50p2cA&amp;dl=1
@@ -48,7 +38,7 @@ private static final Logger logger = LoggerFactory.getLogger(FrilRunner.class);
 	@POST
 	@Path("link")
 	@Consumes("text/plain")
-	@Produces("application/json")
+	@Produces("text/plain")
 	public javax.ws.rs.core.Response link(String jsonStr) throws ParserConfigurationException, JSONException, InterruptedException, ExecutionException, IOException, TransformerException, ClassNotFoundException, RJException{
 		JSONParser parser = new JSONParser(jsonStr);
 		//JSONParser parser = new JSONParser(StandardCharsets.UTF_8.decode(ByteBuffer.wrap(Files.readAllBytes(Paths.get("C:\\Study\\FRIL-v2.1.5-src\\FRIL-v2.1.5-src\\src\\json.txt")))).toString());
@@ -86,7 +76,7 @@ private static final Logger logger = LoggerFactory.getLogger(FrilRunner.class);
 		Linkage.link(configFileName);
 		JSONObject retBody = new JSONObject();
 		retBody.put("resultFile", finalRes);
-		return javax.ws.rs.core.Response.ok().entity(retBody).build();
+		return javax.ws.rs.core.Response.ok().entity(retBody.toString()).build();
 	}
 	
 	@GET

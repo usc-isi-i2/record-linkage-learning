@@ -1,21 +1,21 @@
 package usc.linkage.configuration;
 
-import java.util.ArrayList;
+
 import java.util.HashMap;
 import java.util.Map;
 
-public class JoinSet {
+
+public class AlgorithmSet {
 	private String leftName;
 	private String rightName;
 	private String algorithmName;
 	private String weight;
 	private HashMap<String, String> params = new HashMap<String, String>();
 	
-	public JoinSet(String leftName, String rightName, String algorithmName, String weight){
+	public AlgorithmSet(String leftName, String rightName, String algorithmName){
 		this.leftName = leftName;
 		this.rightName = rightName;
 		this.algorithmName = algorithmName;
-		this.weight = weight;
 	}
 	
 	public void addParam(String name, String value){
@@ -28,6 +28,10 @@ public class JoinSet {
 	
 	public String getRightName(){
 		return rightName;
+	}
+	
+	public void setWeight(String weight){
+		this.weight = weight;
 	}
 	
 	public String getAlgorithmName(){

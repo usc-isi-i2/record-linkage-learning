@@ -5,12 +5,12 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
  
+import org.apache.log4j.Logger;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -20,6 +20,8 @@ public class ConfigBuilder {
 	
 	private Document doc;
 	private Element rootElement;
+	private static Logger log = Logger.getLogger(usc.linkage.configuration.ConfigBuilder.class);
+	
 	
 	public ConfigBuilder() throws ParserConfigurationException{
 		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
@@ -97,9 +99,9 @@ public class ConfigBuilder {
 		return params;
 	}
 	
-	private Element createRowModel(JoinSet[] sets){
+	private Element createRowModel(AlgorithmSet[] sets){
 		Element rowModel = doc.createElement("row-model");
-		for(JoinSet set : sets){
+		for(AlgorithmSet set : sets){
 			Element column = doc.createElement("column");
 			rowModel.appendChild(column);
 			Attr attrName = doc.createAttribute("name");
@@ -109,7 +111,7 @@ public class ConfigBuilder {
 			attrSource.setValue("sourceA");
 			column.setAttributeNode(attrSource);
 		}
-		for(JoinSet set : sets){
+		for(AlgorithmSet set : sets){
 			Element column = doc.createElement("column");
 			rowModel.appendChild(column);
 			Attr attrName = doc.createAttribute("name");
@@ -127,16 +129,13 @@ public class ConfigBuilder {
 		Transformer transformer = transformerFactory.newTransformer();
 		DOMSource source = new DOMSource(doc);
 		StreamResult result = new StreamResult(new File(path));
- 
-		// Output to console for testing
-		// StreamResult result = new StreamResult(System.out);
- 
 		transformer.transform(source, result);
- 
-		System.out.println("File saved!");
+		if(log.isInfoEnabled()){
+			log.info("Configuration file is saved!");
+		}
 	}
 	
-	public void buildJoin(String acceptanceLevel, JoinSet... joinSets){
+	public void buildJoin(String acceptanceLevel, AlgorithmSet... joinSets){
 		Element join = doc.createElement("join");
 		rootElement.appendChild(join);
 		Attr attrClass = doc.createAttribute("class");
@@ -164,15 +163,15 @@ public class ConfigBuilder {
 		Attr attrParaValue = doc.createAttribute("value");
 		attrParaValue.setValue(acceptanceLevel);
 		param.setAttributeNode(attrParaValue);
-		for(JoinSet set : joinSets){
+		for(AlgorithmSet set : joinSets){
 			joinCondition.appendChild(conditionGenerator(set));
 		}
 		join.appendChild(createRowModel(joinSets));
 	}
 	
-	private String getLeftNames(JoinSet[] joinSets){
+	private String getLeftNames(AlgorithmSet[] joinSets){
 		StringBuilder strBuilder = new StringBuilder();
-		for(JoinSet set: joinSets){
+		for(AlgorithmSet set: joinSets){
 			strBuilder.append(set.getLeftName());
 			strBuilder.append(',');
 		}
@@ -182,9 +181,9 @@ public class ConfigBuilder {
 		return strBuilder.toString();
 	}
 	
-	private String getRightNames(JoinSet[] joinSets){
+	private String getRightNames(AlgorithmSet[] joinSets){
 		StringBuilder strBuilder = new StringBuilder();
-		for(JoinSet set: joinSets){
+		for(AlgorithmSet set: joinSets){
 			strBuilder.append(set.getRightName());
 			strBuilder.append(',');
 		}
@@ -205,7 +204,7 @@ public class ConfigBuilder {
 		saver.appendChild(createParams(new String[]{"encoding", "output-file"}, new String[]{"UTF-8", path}));
 	}
 	
-	private Element conditionGenerator(JoinSet set){
+	private Element conditionGenerator(AlgorithmSet set){
 		Element condition = doc.createElement("condition");
 		Attr attrAlgo = doc.createAttribute("class");
 		attrAlgo.setValue(set.getAlgorithmName());

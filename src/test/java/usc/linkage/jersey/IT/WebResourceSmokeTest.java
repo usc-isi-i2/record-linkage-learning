@@ -29,7 +29,8 @@ public class WebResourceSmokeTest extends JerseyTestFrame{
 		
 		ClientResponse clientResponse = null;
 		clientResponse=getWebResource("/link").post(ClientResponse.class, responseBody);
-		JSONObject retJson = clientResponse.getEntity(JSONObject.class);
+		String str = clientResponse.getEntity(String.class);
+		JSONObject retJson = new JSONObject(str);
 		clientResponse=getWebResource("/data/"+retJson.getString("resultFile")).get(ClientResponse.class);
 		System.out.println(clientResponse.getEntity(String.class));
 	}

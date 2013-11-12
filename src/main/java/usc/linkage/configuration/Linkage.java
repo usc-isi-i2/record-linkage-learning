@@ -8,13 +8,16 @@ import cdc.datamodel.DataRow;
 import cdc.utils.RJException;
 import org.apache.log4j.Logger;
 
+
 public class Linkage {
 	
 	private static Logger log = Logger.getLogger(Linkage.class);
 	
 	
 	public static void link(String configPath) throws ClassNotFoundException, RJException, IOException{
-		log.debug("Linkage configuration file path is" + configPath);
+		if(log.isInfoEnabled()){
+			log.info("Linkage starts");
+		}
 		Configuration config=new Configuration(configPath,false);
 		ConfiguredSystem system=config.getSystem();
 		System.gc();
@@ -31,6 +34,8 @@ public class Linkage {
 		system.getResultSaver().close();
 		system.getJoin().closeListeners();
 		//system.getJoin().close();
-		log.debug(system.getJoin() + ": Algorithm produced " + n + " joined tuples. Elapsed time: " +  "ms.");
+		if(log.isInfoEnabled()){
+			log.info("Linkage finishes: " + system.getJoin() + ": Algorithm produced " + n + " joined tuples.");
+		}
 	}
 }

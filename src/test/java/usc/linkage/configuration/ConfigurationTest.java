@@ -73,8 +73,8 @@ public class ConfigurationTest {
 		for(String name: rightNames){
 			System.out.println(name);
 		}
-		JoinSet[] joinSets = parser.getJoinSets();
-		for(JoinSet joinSet : joinSets){
+		AlgorithmSet[] joinSets = parser.getJoinSets();
+		for(AlgorithmSet joinSet : joinSets){
 			System.out.println("One Set");
 			System.out.println(joinSet.getAlgorithmName());
 			System.out.println(joinSet.getLeftName());
