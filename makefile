@@ -1,5 +1,4 @@
 install:
-	set M2
 	mvn install:install-file -Dfile=./jars/commons-logging-1.1.jar -DgroupId=commons-logging -DartifactId=logging -Dversion=1.1 -Dpackaging=jar
 	mvn install:install-file -Dfile=./jars/emory-util-all.jar -DgroupId=emory-util -DartifactId=emory-util-all -Dversion=1.1 -Dpackaging=jar
 	mvn install:install-file -Dfile=./jars/janino.jar -DgroupId=janino -DartifactId=janino -Dversion=1.1 -Dpackaging=jar
