@@ -6,6 +6,15 @@ import org.codehaus.jettison.json.JSONArray;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
+
+/**
+ * 
+ * @author Chen Wang
+ * 
+ * AlgorithmBuilder is a builder for AlgorithmSet Class.
+ *
+ */
+
 public class AlgorithmBuilder {
 	private static Properties prop = new Properties();
 	private String[] params;
@@ -22,6 +31,14 @@ public class AlgorithmBuilder {
 		this.params = params;
 	}
 	
+	/**
+	 * 
+	 * @param colums
+	 * @return LinkedList<String>
+	 * @throws JSONException
+	 * 
+	 * This method is used to create the default value for weight of each algorithm.
+	 */
 	public static LinkedList<String> getDefaultWeight(JSONArray colums) throws JSONException{
 		int total = 0;
 		int numOfProvided = 0;

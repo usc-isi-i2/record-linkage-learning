@@ -15,6 +15,14 @@ import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+/**
+ * 
+ * @author Chen Wang
+ * 
+ * ConfigBuilder Class is used to create the configuration file. Usually, we firstly use JSONParser to
+ * parse the JSON text, then use ConfigBuilder and data stored in the JSONParser object to create the
+ * configuration file.
+ */
 
 public class ConfigBuilder {
 	

@@ -13,7 +13,13 @@ public class Linkage {
 	
 	private static Logger log = Logger.getLogger(Linkage.class);
 	
-	
+	/**
+	 * 
+	 * @param configPath
+	 * @throws ClassNotFoundException
+	 * @throws RJException
+	 * @throws IOException
+	 */
 	public static void link(String configPath) throws ClassNotFoundException, RJException, IOException{
 		if(log.isInfoEnabled()){
 			log.info("Linkage starts");

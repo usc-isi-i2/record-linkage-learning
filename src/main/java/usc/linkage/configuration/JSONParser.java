@@ -19,6 +19,15 @@ import com.ning.http.client.AsyncHttpClient;
 import com.ning.http.client.Request;
 import com.ning.http.client.Response;
 
+
+/**
+ * 
+ * @author Chen Wang
+ *
+ *	JSONParser Class parses the JSON text, retrieves the information, and stores it.
+ *
+ */
+
 public class JSONParser {
 
 	private ArrayList<AlgorithmSet> joinSets = new ArrayList<AlgorithmSet>();

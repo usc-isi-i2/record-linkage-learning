@@ -4,6 +4,14 @@ package usc.linkage.configuration;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * 
+ * @author Chen Wang
+ *
+ *	AlgorithmSet is used to describe one basic Join Algorithm, including the left/right column name,
+ *	algorithm name, weight, and params for the algorithm.
+ */
+
 
 public class AlgorithmSet {
 	private String leftName;

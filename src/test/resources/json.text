@@ -1,0 +1,42 @@
+{	"sourcePathLeft": "https://dl.dropboxusercontent.com/s/t9b3nnlgftb9xo3/source1.csv?token_hash=AAFgnAO0pBYoUHP2icjVBm39fuxwKFn6_gvHdJAr50p2cA&amp;dl=1",
+	"sourcePathRight": "https://dl.dropboxusercontent.com/s/g4c31s8vpvthjm4/source2.csv?token_hash=AAEbXVY9_UUk14vpjBdf9jObZnT5Dm6Gtclkl3SlyhQLHA&amp;dl=1",
+	"acceptance-level": "71",
+	"columns": [ 	
+					{
+						"columnName": "name",
+                        "algorithm": "EditDistance",
+						"weight": "20",
+						"params": {
+							"match-level-start": "0.2",
+							"math-level-end": "0.4"
+						}
+                    },
+					{
+						"columnName": "address",
+                        "algorithm": "EditDistance",
+						"weight": "20",
+						"params": {
+							"match-level-start": "0.2",
+							"math-level-end": "0.4"
+						}
+                    },
+					{
+						"columnName": "contactno",
+                        "algorithm": "EditDistance",
+						"weight": "30",
+						"params": {
+							"match-level-start": "0.2",
+							"math-level-end": "0.4"
+						}
+                    },
+					{
+						"columnName": "cuisine",
+                        "algorithm": "EditDistance",
+						"weight": "30",
+						"params": {
+							"match-level-start":"0.2",
+							"math-level-end": "0.4"
+						}
+                    }
+				]
+}
