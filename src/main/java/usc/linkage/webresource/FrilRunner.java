@@ -1,6 +1,7 @@
 package usc.linkage.webresource;
 
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
@@ -22,6 +23,7 @@ import org.codehaus.jettison.json.JSONObject;
 import usc.linkage.configuration.ConfigBuilder;
 import usc.linkage.configuration.JSONParser;
 import usc.linkage.configuration.Linkage;
+import usc.linkage.uniqueIdGenerator.UniqueIDGenerator;
 
 import cdc.utils.RJException;
 
@@ -33,7 +35,13 @@ public class FrilRunner {
 //https://dl.dropboxusercontent.com/s/t9b3nnlgftb9xo3/source1.csv?token_hash=AAFgnAO0pBYoUHP2icjVBm39fuxwKFn6_gvHdJAr50p2cA&amp;dl=1
 
 	private static final String configFileName = "config.xml";
-	private static final String finalRes = "result.csv";
+	private static final String resultDir = "FrilResults";
+	
+	static{
+		if(!new File(resultDir).exists()){
+			new File(resultDir).mkdirs();
+		}
+	}
 
 	@POST
 	@Path("link")
@@ -67,11 +75,12 @@ public class FrilRunner {
 				System.out.println(paramValue);
 			}
 		}*/
+		String finalRes = new StringBuilder().append("result_").append(UniqueIDGenerator.getUniqueID()).append(".csv").toString();
 		ConfigBuilder configBuilder1 = new ConfigBuilder();
 		configBuilder1.buildLeftData("source1.csv", parser.getLeftColmNames());
 		configBuilder1.buildRightData("source2.csv", parser.getRightColmNames());
 		configBuilder1.buildJoin(parser.getAcceptLevel(), parser.getJoinSets());
-		configBuilder1.buildSaver(finalRes);
+		configBuilder1.buildSaver(new StringBuilder().append(resultDir).append("/").append(finalRes).toString());
 		configBuilder1.build(configFileName);
 		Linkage.link(configFileName);
 		JSONObject retBody = new JSONObject();
@@ -83,7 +92,7 @@ public class FrilRunner {
 	@Path("data/{fileName}")
 	@Produces("text/plain")
 	public javax.ws.rs.core.Response getLinkageResult(@PathParam("fileName") String fileName) throws IOException{
-		String data = StandardCharsets.UTF_8.decode(ByteBuffer.wrap(Files.readAllBytes(Paths.get(fileName)))).toString();
+		String data = StandardCharsets.UTF_8.decode(ByteBuffer.wrap(Files.readAllBytes(Paths.get(new StringBuilder().append(resultDir).append("/").append(fileName).toString())))).toString();
 		return javax.ws.rs.core.Response.ok().entity(data).build();
 	}
 	
