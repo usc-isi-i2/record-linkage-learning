@@ -38,7 +38,8 @@ public class JSONParser {
 	private String acceptLevel;
 	private static Logger log = Logger.getLogger(JSONParser.class);
 	private static Properties prop = new Properties();
-
+	private static AsyncHttpClient httpClient = new AsyncHttpClient();
+	
 	static {
 		try {
 			prop.load(JSONParser.class.getClassLoader().getResourceAsStream(
@@ -49,14 +50,13 @@ public class JSONParser {
 		}
 	}
 
-	public JSONParser(JSONObject obj) throws ParserConfigurationException,
+	public JSONParser(JSONObject obj, String leftSourceFilePath, String rightSourceFilePath) throws ParserConfigurationException,
 			JSONException, InterruptedException, ExecutionException,
 			IOException {
-
 		leftSourcePath = obj.getString("sourcePathLeft");
 		rightSourcePath = obj.getString("sourcePathRight");
-		generateSource(leftSourcePath, "source1.csv");
-		generateSource(rightSourcePath, "source2.csv");
+		generateSource(leftSourcePath, leftSourceFilePath);
+		generateSource(rightSourcePath, rightSourceFilePath);
 		acceptLevel = obj.getString("acceptance-level");
 		if (acceptLevel == null || acceptLevel.equals("")) {
 			acceptLevel = prop.getProperty("acceptLevel");
@@ -76,10 +76,10 @@ public class JSONParser {
 		}
 	}
 
-	public JSONParser(String stringBody) throws ParserConfigurationException,
+	public JSONParser(String stringBody,String leftSourceFilePath, String rightSourceFilePath) throws ParserConfigurationException,
 			JSONException, InterruptedException, ExecutionException,
 			IOException {
-		this(new JSONObject(stringBody));
+		this(new JSONObject(stringBody),leftSourceFilePath, rightSourceFilePath);
 		// this(new JSONObject(new Scanner(new
 		// File(filePath)).useDelimiter("\\Z").next()));
 	}
@@ -112,7 +112,6 @@ public class JSONParser {
 
 	private void generateSource(String url, String fileName)
 			throws InterruptedException, ExecutionException, IOException {
-		AsyncHttpClient httpClient = new AsyncHttpClient();
 		Request request = httpClient.prepareGet(url).build();
 		Response response = httpClient.executeRequest(request).get();
 		String responseBody = response.getResponseBody();

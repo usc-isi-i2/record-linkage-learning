@@ -19,6 +19,9 @@ import javax.xml.transform.TransformerException;
 import org.codehaus.jettison.json.JSONException;
 import org.testng.annotations.Test;
 
+import usc.linkage.uniqueIdGenerator.UniqueIDGenerator;
+import usc.linkage.webresource.FrilRunner;
+
 import cdc.configuration.Configuration;
 import cdc.impl.datasource.text.CSVDataSource;
 import cdc.utils.Log;
@@ -52,7 +55,16 @@ public class ConfigurationTest {
 				}
 			}
 		}
-		JSONParser parser = new JSONParser(strBuilder.toString());
+		
+		String uid = UniqueIDGenerator.getUniqueID();
+		String finalRes = new StringBuilder().append("test_result_").append(uid).append(FrilRunner.CSV_EXTENSION).toString();
+		String leftSourceName = new StringBuilder().append("test_SourceA_").append(uid).toString();
+		String rightSourceName = new StringBuilder().append("test_SourceB_").append(uid).toString();
+		String leftSourceFilePath = new StringBuilder().append(FrilRunner.UTILITY_DIR).append("/").append(leftSourceName).append(FrilRunner.CSV_EXTENSION).toString();
+		String rightSourceFilePath = new StringBuilder().append(FrilRunner.UTILITY_DIR).append("/").append(rightSourceName).append(FrilRunner.CSV_EXTENSION).toString();
+		String configFilePath = new StringBuilder().append(FrilRunner.CONFIG_DIR).append("/test_config_").append(uid).append(FrilRunner.XML_EXTENSION).toString();
+		
+		JSONParser parser = new JSONParser(strBuilder.toString(), leftSourceFilePath, rightSourceFilePath);
 		//JSONParser parser = new JSONParser(StandardCharsets.UTF_8.decode(ByteBuffer.wrap(Files.readAllBytes(Paths.get("C:\\Study\\FRIL-v2.1.5-src\\FRIL-v2.1.5-src\\src\\json.txt")))).toString());
 		System.out.println(parser.getLeftSourcePath());
 		System.out.println(parser.getRightSourcePath());
@@ -79,13 +91,13 @@ public class ConfigurationTest {
 				System.out.println(paramValue);
 			}
 		}
-		ConfigBuilder configBuilder1 = new ConfigBuilder();
-		configBuilder1.buildLeftData("source1.csv", parser.getLeftColmNames());
-		configBuilder1.buildRightData("source2.csv", parser.getRightColmNames());
+		ConfigBuilder configBuilder1 = new ConfigBuilder(leftSourceName, rightSourceName);
+		configBuilder1.buildLeftData(leftSourceFilePath, parser.getLeftColmNames());
+		configBuilder1.buildRightData(rightSourceFilePath, parser.getRightColmNames());
 		configBuilder1.buildJoin(parser.getAcceptLevel(), parser.getJoinSets());
-		configBuilder1.buildSaver("result5.csv");
-		configBuilder1.build("b.xml");
-		Linkage.link("b.xml");
+		configBuilder1.buildSaver(new StringBuilder().append(FrilRunner.RESULT_DIR).append("/").append(finalRes).toString());
+		configBuilder1.build(configFilePath);
+		Linkage.link(configFilePath);
 		
 	}
 }

@@ -4,6 +4,15 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicLong;
 
+
+/**
+ * 
+ * @author Chen Wang
+ * 
+ * 	UniqueIDGenerator is used to create unique id for identifying different linkage result files.
+ *
+ */
+
 public class UniqueIDGenerator {
 	private static SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss_SSS");
 	private static AtomicLong randomNumber = new AtomicLong(0);

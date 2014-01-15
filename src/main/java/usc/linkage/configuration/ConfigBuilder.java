@@ -29,15 +29,19 @@ public class ConfigBuilder {
 	private Document doc;
 	private Element rootElement;
 	private static Logger log = Logger.getLogger(usc.linkage.configuration.ConfigBuilder.class);
+	private String leftSourceName;
+	private String rightSourceName;
 	
 	
-	public ConfigBuilder() throws ParserConfigurationException{
+	public ConfigBuilder(String leftSourceName, String rightSourceName) throws ParserConfigurationException{
 		DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
 		DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
 		// root elements
 		doc = docBuilder.newDocument();
 		rootElement = doc.createElement("configuration");
 		doc.appendChild(rootElement);
+		this.leftSourceName = leftSourceName;
+		this.rightSourceName = rightSourceName;
 	}
 	
 	
@@ -47,10 +51,10 @@ public class ConfigBuilder {
 		attrClass.setValue("cdc.impl.datasource.text.CSVDataSource");
 		leftData.setAttributeNode(attrClass);
 		Attr sourceName = doc.createAttribute("name");
-		sourceName.setValue("sourceA");
+		sourceName.setValue(leftSourceName);
 		leftData.setAttributeNode(sourceName);
 		rootElement.appendChild(leftData);
-		leftData.appendChild(createParams(new String[]{"column-separator", "source-name", "input-file"}, new String[]{",", "sourceA", sourcePath}));
+		leftData.appendChild(createParams(new String[]{"column-separator", "source-name", "input-file"}, new String[]{",", leftSourceName, sourcePath}));
 		Element rowModel = doc.createElement("row-model");
 		leftData.appendChild(rowModel);
 		for(String name : colmNames){
@@ -64,10 +68,10 @@ public class ConfigBuilder {
 		attrClass.setValue("cdc.impl.datasource.text.CSVDataSource");
 		leftData.setAttributeNode(attrClass);
 		Attr sourceName = doc.createAttribute("name");
-		sourceName.setValue("sourceB");
+		sourceName.setValue(rightSourceName);
 		leftData.setAttributeNode(sourceName);
 		rootElement.appendChild(leftData);
-		leftData.appendChild(createParams(new String[]{"column-separator", "source-name", "input-file"}, new String[]{",", "sourceB", sourcePath}));
+		leftData.appendChild(createParams(new String[]{"column-separator", "source-name", "input-file"}, new String[]{",", rightSourceName, sourcePath}));
 		Element rowModel = doc.createElement("row-model");
 		leftData.appendChild(rowModel);
 		for(String name : colmNames){
@@ -116,7 +120,7 @@ public class ConfigBuilder {
 			attrName.setValue(set.getLeftName());
 			column.setAttributeNode(attrName);
 			Attr attrSource = doc.createAttribute("source");
-			attrSource.setValue("sourceA");
+			attrSource.setValue(leftSourceName);
 			column.setAttributeNode(attrSource);
 		}
 		for(AlgorithmSet set : sets){
@@ -126,7 +130,7 @@ public class ConfigBuilder {
 			attrName.setValue(set.getRightName());
 			column.setAttributeNode(attrName);
 			Attr attrSource = doc.createAttribute("source");
-			attrSource.setValue("sourceB");
+			attrSource.setValue(rightSourceName);
 			column.setAttributeNode(attrSource);
 		}
 		return rowModel;

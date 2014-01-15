@@ -17,6 +17,8 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
+
+import org.apache.log4j.Logger;
 import org.codehaus.jettison.json.JSONException;
 import org.codehaus.jettison.json.JSONObject;
 
@@ -34,12 +36,22 @@ public class FrilRunner {
 //"https://dl.dropboxusercontent.com/s/g4c31s8vpvthjm4/source2.csv?token_hash=AAEbXVY9_UUk14vpjBdf9jObZnT5Dm6Gtclkl3SlyhQLHA&amp;dl=1
 //https://dl.dropboxusercontent.com/s/t9b3nnlgftb9xo3/source1.csv?token_hash=AAFgnAO0pBYoUHP2icjVBm39fuxwKFn6_gvHdJAr50p2cA&amp;dl=1
 
-	private static final String configFileName = "config.xml";
-	private static final String resultDir = "FrilResults";
+	public static final String CONFIG_DIR = "FrilConfig";
+	public static final String RESULT_DIR = "FrilResults";
+	public static final String UTILITY_DIR = "FrilUtility";
+	public static final String CSV_EXTENSION = ".csv";
+	public static final String XML_EXTENSION = ".xml";
+	private static Logger log = Logger.getLogger(FrilRunner.class);
 	
 	static{
-		if(!new File(resultDir).exists()){
-			new File(resultDir).mkdirs();
+		if(!new File(RESULT_DIR).exists()){
+			new File(RESULT_DIR).mkdirs();
+		}
+		if(!new File(UTILITY_DIR).exists()){
+			new File(UTILITY_DIR).mkdirs();
+		}
+		if(!new File(CONFIG_DIR).exists()){
+			new File(CONFIG_DIR).mkdirs();
 		}
 	}
 
@@ -48,43 +60,24 @@ public class FrilRunner {
 	@Consumes("text/plain")
 	@Produces("text/plain")
 	public javax.ws.rs.core.Response link(String jsonStr) throws ParserConfigurationException, JSONException, InterruptedException, ExecutionException, IOException, TransformerException, ClassNotFoundException, RJException{
-		JSONParser parser = new JSONParser(jsonStr);
-		//JSONParser parser = new JSONParser(StandardCharsets.UTF_8.decode(ByteBuffer.wrap(Files.readAllBytes(Paths.get("C:\\Study\\FRIL-v2.1.5-src\\FRIL-v2.1.5-src\\src\\json.txt")))).toString());
-		/*System.out.println(parser.getLeftSourcePath());
-		System.out.println(parser.getRightSourcePath());
-		System.out.println(parser.getAcceptLevel());
-		String[] leftNames = parser.getLeftColmNames();
-		String[] rightNames = parser.getRightColmNames();
-		for(String name : leftNames){
-			System.out.println(name);
-		}
-		for(String name: rightNames){
-			System.out.println(name);
-		}
-		JoinSet[] joinSets = parser.getJoinSets();
-		for(JoinSet joinSet : joinSets){
-			System.out.println("One Set");
-			System.out.println(joinSet.getAlgorithmName());
-			System.out.println(joinSet.getLeftName());
-			System.out.println(joinSet.getRightName());
-			System.out.println(joinSet.getWeight());
-			for(String paramNames : joinSet.getParamNames()){
-				System.out.println(paramNames);
-			}
-			for(String paramValue : joinSet.getParamValues()){
-				System.out.println(paramValue);
-			}
-		}*/
-		String finalRes = new StringBuilder().append("result_").append(UniqueIDGenerator.getUniqueID()).append(".csv").toString();
-		ConfigBuilder configBuilder1 = new ConfigBuilder();
-		configBuilder1.buildLeftData("source1.csv", parser.getLeftColmNames());
-		configBuilder1.buildRightData("source2.csv", parser.getRightColmNames());
+		String uid = UniqueIDGenerator.getUniqueID();
+		String finalRes = new StringBuilder().append("result_").append(uid).append(CSV_EXTENSION).toString();
+		String leftSourceName = new StringBuilder().append("SourceA_").append(uid).toString();
+		String rightSourceName = new StringBuilder().append("SourceB_").append(uid).toString();
+		String leftSouceFilePath = new StringBuilder().append(UTILITY_DIR).append("/").append(leftSourceName).append(CSV_EXTENSION).toString();
+		String rightSourceFilePath = new StringBuilder().append(UTILITY_DIR).append("/").append(rightSourceName).append(CSV_EXTENSION).toString();
+		String configFilePath = new StringBuilder().append(CONFIG_DIR).append("/config_").append(uid).append(XML_EXTENSION).toString();
+		JSONParser parser = new JSONParser(jsonStr, leftSouceFilePath, rightSourceFilePath);
+		ConfigBuilder configBuilder1 = new ConfigBuilder(leftSourceName, rightSourceName);
+		configBuilder1.buildLeftData(leftSouceFilePath, parser.getLeftColmNames());
+		configBuilder1.buildRightData(rightSourceFilePath, parser.getRightColmNames());
 		configBuilder1.buildJoin(parser.getAcceptLevel(), parser.getJoinSets());
-		configBuilder1.buildSaver(new StringBuilder().append(resultDir).append("/").append(finalRes).toString());
-		configBuilder1.build(configFileName);
-		Linkage.link(configFileName);
+		configBuilder1.buildSaver(new StringBuilder().append(RESULT_DIR).append("/").append(finalRes).toString());
+		configBuilder1.build(configFilePath);
+		Linkage.link(configFilePath);
 		JSONObject retBody = new JSONObject();
 		retBody.put("resultFile", finalRes);
+		removeMinusFiles(uid);//This method is not efficient. Later we can figure out how to configure the paths of the minus files, then we can remove this method.
 		return javax.ws.rs.core.Response.ok().entity(retBody.toString()).build();
 	}
 	
@@ -92,9 +85,52 @@ public class FrilRunner {
 	@Path("data/{fileName}")
 	@Produces("text/plain")
 	public javax.ws.rs.core.Response getLinkageResult(@PathParam("fileName") String fileName) throws IOException{
-		String data = StandardCharsets.UTF_8.decode(ByteBuffer.wrap(Files.readAllBytes(Paths.get(new StringBuilder().append(resultDir).append("/").append(fileName).toString())))).toString();
+		String data = StandardCharsets.UTF_8.decode(ByteBuffer.wrap(Files.readAllBytes(Paths.get(new StringBuilder().append(RESULT_DIR).append("/").append(fileName).toString())))).toString();
 		return javax.ws.rs.core.Response.ok().entity(data).build();
 	}
 	
+	/**
+	 * 
+	 * @param uid
+	 * 
+	 * This method is not efficient. Later we can figure out how to configure the paths of the minus files, then we can remove this method.
+	 * 
+	 */
+	private void removeMinusFiles(String uid){
+		String leftMinusFileName = new StringBuilder().append("minus-SourceA_").append(uid).append(CSV_EXTENSION).toString();
+		String rightMinusFileName = new StringBuilder().append("minus-SourceB_").append(uid).append(CSV_EXTENSION).toString();
+		try{
+    		File leftMinusFile = new File(leftMinusFileName);
+    		if(leftMinusFile.delete()){
+    			if(log.isInfoEnabled()){
+    				log.info("Minus file for Source A is deleted");
+    			}
+    		}else{
+    			if(log.isInfoEnabled()){
+    				log.warn("Minus file for Source A can not be deleted");
+    			}
+    		}
+    	}catch(Exception e){
+    		if(log.isInfoEnabled()){
+				log.warn(leftMinusFileName + " does not exist!");
+			}
+    	}
+		try{
+    		File rightMinusFile = new File(rightMinusFileName);
+    		if(rightMinusFile.delete()){
+    			if(log.isInfoEnabled()){
+    				log.info("Minus file for Source B is deleted");
+    			}
+    		}else{
+    			if(log.isInfoEnabled()){
+    				log.warn("Minus file for Source B can not be deleted");
+    			}
+    		}
+    	}catch(Exception e){
+    		if(log.isInfoEnabled()){
+				log.warn(leftMinusFileName + " does not exist!");
+			}
+    	}
+	}
 	
 }
