@@ -1,6 +1,8 @@
 record-linkage-learning
 =======================
 
+NOTE from Pedro: copied the FRIL service code to its own repository. Once we verify that we can run it we should delete this branch (2013-12-27)
+
 Record Linkage Project, learning FRIL configurations
 
 
