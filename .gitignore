@@ -5,3 +5,7 @@ test-output/
 config.xml
 b.xml
 *.log
+FrilConfig/
+FrilResults/
+FrilUtility/
+logs/
